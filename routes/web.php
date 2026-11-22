@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MyGradesController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -56,4 +57,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/mi-informacion', MyGradesController::class)
         ->middleware('role:alumno')
         ->name('mi-informacion');
+
+            // Productos: admin y empleado consultan, buscan y ordenan
+    Route::get('productos', [ProductController::class, 'index'])
+        ->middleware('role:admin,empleado')
+        ->name('productos.index');
+
+    // Productos: solo el admin registra, actualiza y elimina
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('productos', ProductController::class)
+            ->parameters(['productos' => 'product'])
+            ->except(['index', 'show']);
+    });
 });

@@ -288,5 +288,11 @@ return [
         'year'                     => 'año',
         'faltas' => 'faltas',
 'calificacion' => 'calificación',
+'nombre' => 'nombre',
+'descripcion' => 'descripción',
+'category_id' => 'categoría',
+'precio' => 'precio',
+'existencias' => 'existencias',
+'estado' => 'estado',
     ],
 ];

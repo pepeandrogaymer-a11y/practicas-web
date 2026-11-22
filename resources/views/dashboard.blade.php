@@ -13,6 +13,10 @@
            class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4">
             Administrar usuarios
         </a>
+        <a href="{{ route('productos.index') }}"
+       class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4">
+        Productos
+    </a>
 @endif
 
     @if (auth()->user()->isProfesor())

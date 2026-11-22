@@ -51,5 +51,6 @@ class DatabaseSeeder extends Seeder
                 ['faltas' => $faltas, 'calificacion' => $calificacion]
             );
         }
+                $this->call(ProductSeeder::class);
     }
 }
