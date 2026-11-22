@@ -11,7 +11,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderBy('name')->paginate(10);
+       $users = User::whereIn('role', ['admin', 'empleado'])->orderBy('name')->paginate(10);
+
 
         return view('users.index', compact('users'));
     }
@@ -83,8 +84,7 @@ class UserController extends Controller
 
     public function trashed()
     {
-        $users = User::onlyTrashed()->orderBy('name')->paginate(10);
-
+        $users = User::onlyTrashed()->whereIn('role', ['admin', 'empleado'])->orderBy('name')->paginate(10);
         return view('users.trashed', compact('users'));
     }
 

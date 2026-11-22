@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable(['name', 'email', 'password','role'])]
 #[Hidden(['password', 'remember_token'])]
@@ -36,7 +37,21 @@ public function isAdmin(): bool
 {
     return $this->role === 'admin';
 }
-    }
+    public function isProfesor(): bool
+{
+    return $this->role === 'profesor';
+}
+
+public function isAlumno(): bool
+{
+    return $this->role === 'alumno';
+}
+
+public function student(): HasOne
+{
+    return $this->hasOne(Student::class);
+}
+}
 
 ;
 

@@ -4,6 +4,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MyGradesController;
+use App\Http\Controllers\StudentController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -42,4 +44,16 @@ Route::middleware('auth')->group(function () {
             ->parameters(['usuarios' => 'user'])
             ->except(['destroy']);
     });
+
+        // Profesor: administra alumnos
+    Route::middleware('role:profesor')->group(function () {
+        Route::resource('alumnos', StudentController::class)
+            ->parameters(['alumnos' => 'student'])
+            ->except(['show']);
+    });
+
+    // Alumno: solo consulta su información
+    Route::get('/mi-informacion', MyGradesController::class)
+        ->middleware('role:alumno')
+        ->name('mi-informacion');
 });

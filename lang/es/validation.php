@@ -286,5 +286,7 @@ return [
         'winner'                   => 'ganador',
         'work'                     => 'trabajo',
         'year'                     => 'año',
+        'faltas' => 'faltas',
+'calificacion' => 'calificación',
     ],
 ];
