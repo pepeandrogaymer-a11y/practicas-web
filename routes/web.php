@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MyGradesController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ComputerController;
+use App\Http\Controllers\ReservationController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -68,5 +70,36 @@ Route::middleware('auth')->group(function () {
         Route::resource('productos', ProductController::class)
             ->parameters(['productos' => 'product'])
             ->except(['index', 'show']);
+
+                // Equipos: admin y estudiante los consultan (el estudiante solo ve los disponibles)
+    Route::get('equipos', [ComputerController::class, 'index'])
+        ->middleware('role:admin,estudiante')
+        ->name('equipos.index');
+
+    // Solo administrador: administrar equipos y ver todas las reservaciones
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('equipos', ComputerController::class)
+            ->parameters(['equipos' => 'computer'])
+            ->except(['index', 'show']);
+
+        Route::get('reservaciones', [ReservationController::class, 'index'])
+            ->name('reservaciones.index');
+    });
+
+    // Solo estudiante: reservar y ver sus propias reservaciones
+    Route::middleware('role:estudiante')->group(function () {
+        Route::post('equipos/{computer}/reservar', [ReservationController::class, 'store'])
+            ->name('equipos.reservar');
+        Route::get('mis-reservaciones', [ReservationController::class, 'mine'])
+            ->name('reservaciones.mias');
+    });
+
+    // Detalle y cancelación: la política decide si es tuya (o si eres admin)
+    Route::middleware('role:admin,estudiante')->group(function () {
+        Route::get('reservaciones/{reservation}', [ReservationController::class, 'show'])
+            ->name('reservaciones.show');
+        Route::patch('reservaciones/{reservation}/cancelar', [ReservationController::class, 'cancel'])
+            ->name('reservaciones.cancel');
+    });
     });
 });

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'email', 'password','role'])]
 #[Hidden(['password', 'remember_token'])]
@@ -50,6 +51,16 @@ public function isAlumno(): bool
 public function student(): HasOne
 {
     return $this->hasOne(Student::class);
+}
+
+public function isEstudiante(): bool
+{
+    return $this->role === 'estudiante';
+}
+
+public function reservations(): HasMany
+{
+    return $this->hasMany(Reservation::class);
 }
 }
 
