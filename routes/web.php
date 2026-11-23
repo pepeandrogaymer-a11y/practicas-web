@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\AdminGameController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\TwoFactorController;
+use App\Http\Controllers\ComputerController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\MyGradesController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MyGradesController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ComputerController;
-use App\Http\Controllers\ReservationController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -24,13 +27,17 @@ Route::middleware(['guest', 'two-factor.pending', 'signed'])->group(function () 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
+
+    Route::get('/registro', [RegisterController::class, 'showRegistrationForm'])->name('registro');
+    Route::post('/registro', [RegisterController::class, 'register'])->middleware('throttle:10,1');
 });
 
-// Solo para usuarios con sesión iniciada
+// Solo usuarios con sesión iniciada
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
+    // ---------- Práctica 1.2: usuarios ----------
     // Solo administrador. Va PRIMERO para que "papelera" no se confunda con {user}
     Route::middleware('role:admin')->prefix('usuarios')->name('usuarios.')->group(function () {
         Route::get('papelera', [UserController::class, 'trashed'])->name('trashed');
@@ -48,35 +55,33 @@ Route::middleware('auth')->group(function () {
             ->except(['destroy']);
     });
 
-        // Profesor: administra alumnos
+    // ---------- Práctica 1.3: sistema académico ----------
     Route::middleware('role:profesor')->group(function () {
         Route::resource('alumnos', StudentController::class)
             ->parameters(['alumnos' => 'student'])
             ->except(['show']);
     });
 
-    // Alumno: solo consulta su información
     Route::get('/mi-informacion', MyGradesController::class)
         ->middleware('role:alumno')
         ->name('mi-informacion');
 
-            // Productos: admin y empleado consultan, buscan y ordenan
+    // ---------- Práctica 1.4: productos ----------
     Route::get('productos', [ProductController::class, 'index'])
         ->middleware('role:admin,empleado')
         ->name('productos.index');
 
-    // Productos: solo el admin registra, actualiza y elimina
     Route::middleware('role:admin')->group(function () {
         Route::resource('productos', ProductController::class)
             ->parameters(['productos' => 'product'])
             ->except(['index', 'show']);
+    });
 
-                // Equipos: admin y estudiante los consultan (el estudiante solo ve los disponibles)
+    // ---------- Práctica 1.5: equipos y reservaciones ----------
     Route::get('equipos', [ComputerController::class, 'index'])
         ->middleware('role:admin,estudiante')
         ->name('equipos.index');
 
-    // Solo administrador: administrar equipos y ver todas las reservaciones
     Route::middleware('role:admin')->group(function () {
         Route::resource('equipos', ComputerController::class)
             ->parameters(['equipos' => 'computer'])
@@ -86,7 +91,6 @@ Route::middleware('auth')->group(function () {
             ->name('reservaciones.index');
     });
 
-    // Solo estudiante: reservar y ver sus propias reservaciones
     Route::middleware('role:estudiante')->group(function () {
         Route::post('equipos/{computer}/reservar', [ReservationController::class, 'store'])
             ->name('equipos.reservar');
@@ -94,12 +98,33 @@ Route::middleware('auth')->group(function () {
             ->name('reservaciones.mias');
     });
 
-    // Detalle y cancelación: la política decide si es tuya (o si eres admin)
     Route::middleware('role:admin,estudiante')->group(function () {
         Route::get('reservaciones/{reservation}', [ReservationController::class, 'show'])
             ->name('reservaciones.show');
         Route::patch('reservaciones/{reservation}/cancelar', [ReservationController::class, 'cancel'])
             ->name('reservaciones.cancel');
     });
+
+    // ---------- Práctica 1.6: juego del gato ----------
+    // Solo jugadores
+    Route::middleware('role:jugador')->prefix('juego')->name('juego.')->group(function () {
+        Route::get('/', [GameController::class, 'index'])->name('index');
+        Route::get('historial', [GameController::class, 'history'])->name('historial');
+        Route::post('partidas', [GameController::class, 'store'])->name('store');
+        Route::post('partidas/{game}/unirse', [GameController::class, 'join'])->name('join');
+        Route::post('partidas/{game}/movimientos', [GameController::class, 'move'])->name('move');
+        Route::post('partidas/{game}/abandonar', [GameController::class, 'leave'])->name('leave');
+    });
+
+    // Ver una partida y consultar su estado: jugadores y admin (la política decide si es tuya)
+    Route::middleware('role:jugador,admin')->prefix('juego/partidas')->name('juego.')->group(function () {
+        Route::get('{game}', [GameController::class, 'show'])->name('show');
+        Route::get('{game}/estado', [GameController::class, 'state'])->name('state');
+    });
+
+    // Administrador: todas las partidas y cancelación
+    Route::middleware('role:admin')->prefix('admin/partidas')->name('admin.partidas.')->group(function () {
+        Route::get('/', [AdminGameController::class, 'index'])->name('index');
+        Route::patch('{game}/cancelar', [AdminGameController::class, 'cancel'])->name('cancel');
     });
 });

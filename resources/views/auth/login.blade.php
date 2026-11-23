@@ -33,6 +33,10 @@
                 Entrar
             </button>
         </form>
+                <p class="text-sm text-center mt-4">
+            ¿No tienes cuenta?
+            <a href="{{ route('registro') }}" class="text-blue-600 hover:underline">Regístrate</a>
+        </p>
     </div>
 </div>
 @endsection

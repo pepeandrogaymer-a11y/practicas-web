@@ -25,8 +25,8 @@ class UpdateUserRequest extends FormRequest
             'password' => ['nullable', 'confirmed', Password::min(8)],
         ];
 
-        if ($this->user()->isAdmin()) {
-            $rules['role'] = ['required', Rule::in(['admin', 'empleado'])];
+                if ($this->user()->isAdmin()) {
+            $rules['role'] = ['required', Rule::in(['admin', 'empleado', 'jugador'])];
         }
 
         return $rules;

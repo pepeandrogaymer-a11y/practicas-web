@@ -53,5 +53,6 @@ class DatabaseSeeder extends Seeder
         }
                 $this->call(ProductSeeder::class);
                         $this->call(ComputerSeeder::class);
+                                $this->call(PlayerSeeder::class);
     }
 }

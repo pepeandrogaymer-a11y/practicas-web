@@ -294,5 +294,6 @@ return [
 'precio' => 'precio',
 'existencias' => 'existencias',
 'estado' => 'estado',
+'posicion' => 'posición',
     ],
 ];

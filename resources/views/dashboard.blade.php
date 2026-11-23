@@ -20,6 +20,8 @@
                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Equipos</a>
             <a href="{{ route('reservaciones.index') }}"
                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Reservaciones</a>
+            <a href="{{ route('admin.partidas.index') }}"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Partidas del gato</a>
         @endif
 
         @if (auth()->user()->isProfesor())
@@ -37,6 +39,13 @@
                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Equipos disponibles</a>
             <a href="{{ route('reservaciones.mias') }}"
                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Mis reservaciones</a>
+        @endif
+
+        @if (auth()->user()->isJugador())
+            <a href="{{ route('juego.index') }}"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Jugar al gato</a>
+            <a href="{{ route('juego.historial') }}"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Mi historial</a>
         @endif
     </div>
 </div>

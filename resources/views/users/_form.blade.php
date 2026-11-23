@@ -32,7 +32,7 @@
     <div class="mb-6">
         <label for="role" class="block text-sm font-medium mb-1">Rol</label>
         <select id="role" name="role" class="w-full border rounded px-3 py-2">
-            @foreach (['empleado' => 'Empleado', 'admin' => 'Administrador'] as $value => $label)
+            @foreach (['empleado' => 'Empleado', 'admin' => 'Administrador', 'jugador' => 'Jugador'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('role', $user->role ?? 'empleado') === $value)>{{ $label }}</option>
             @endforeach
         </select>

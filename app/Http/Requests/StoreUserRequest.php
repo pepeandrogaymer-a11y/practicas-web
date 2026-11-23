@@ -21,9 +21,9 @@ class StoreUserRequest extends FormRequest
             'password' => ['required', 'confirmed', Password::min(8)],
         ];
 
-        // Solo el admin puede elegir el rol
+             // Solo el admin puede elegir el rol
         if ($this->user()->isAdmin()) {
-            $rules['role'] = ['required', Rule::in(['admin', 'empleado'])];
+            $rules['role'] = ['required', Rule::in(['admin', 'empleado', 'jugador'])];
         }
 
         return $rules;

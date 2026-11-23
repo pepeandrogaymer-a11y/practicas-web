@@ -62,6 +62,12 @@ public function reservations(): HasMany
 {
     return $this->hasMany(Reservation::class);
 }
+
+public function isJugador(): bool
+{
+    return $this->role === 'jugador';
+}
+
 }
 
 ;
